@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react'
 import { X } from 'lucide-react'
 import '../Components/Modal.css'
-import { useDispatch } from "react-redux";
+import { getTemplateConfig, setTemplate } from '../store/templateSlice';
+import { setDefaultPageColor } from '../store/pagesSlice';
+import { useDispatch } from 'react-redux';
 
-const Modal = ({setOpenPopup,setTemplate,handleTemplate,openPopup}) => {
+
+const Modal = ({setOpenPopup,openPopup}) => { 
+const dispatch = useDispatch();
+  
   
 
  const templates = [
@@ -23,6 +28,23 @@ useEffect(() => {
         document.body.classList.remove('modal-open');
     };
   }, [openPopup]);
+
+  // ✅ template selection handler
+    const handleTemplate = (value) => {
+      console.log("Selected Template:", value);
+  
+      // set template in Redux
+      dispatch(setTemplate(value));
+  
+      // fetch config for selected template
+      const config = getTemplateConfig(value);
+      console.log("Template config:", config);
+  
+      // update default pagecolor in pagesSlice
+      if (config?.pagecolor) {
+        dispatch(setDefaultPageColor(config.pagecolor));
+      }
+    };
  
   return (
     <div className="overlay">

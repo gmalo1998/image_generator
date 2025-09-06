@@ -1,8 +1,8 @@
 import React, { lazy, Suspense, useRef, useState,useEffect } from "react";
-import * as htmlToImage from "html-to-image";
+import domtoimage from 'dom-to-image-more';
 import PageLoader from './Components/PageLoader.jsx'
 import "./App.css";
-import { setTemplate as setTemplateAction } from "./store/templateSlice.js"; // Redux
+import { getTemplateConfig, setTemplate, setTemplate as setTemplateAction } from "./store/templateSlice.js"; // Redux
 import { useDispatch, useSelector } from "react-redux";
 const Navbar = lazy(() => import("./Components/Navbar"));
 const SidebarLayout = lazy(() => import("./Page/SidebarLayout"));
@@ -32,11 +32,11 @@ function App() {
     }
     let dataUrl;
     if (format === "toPNG") {
-      dataUrl = await htmlToImage.toPng(previewRef.current, { pixelRatio: 2 });
+      dataUrl = await domtoimage.toPng(previewRef.current, { pixelRatio: 2 ,cacheBust: true,});
     } else if (format === "toJPEG") {
-      dataUrl = await htmlToImage.toJpeg(previewRef.current, { pixelRatio: 2 });
+      dataUrl = await domtoimage.toJpeg(previewRef.current, { pixelRatio: 2,cacheBust: true, });
     } else if (format === "toSVG") {
-      dataUrl = await htmlToImage.toSvg(previewRef.current);
+      dataUrl = await domtoimage.toSvg(previewRef.current);
     }
 
     if (dataUrl) {
@@ -47,11 +47,7 @@ function App() {
     }
   };
 
-  // ✅ template selection (only Redux, no local state duplication)
-  const handleTemplate = (value) => {
-    console.log("Selected Template:", value);
-    dispatch(setTemplateAction(value));
-  };
+  
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000); // simulate initial load
     return () => clearTimeout(timer);
@@ -62,7 +58,7 @@ function App() {
    <Suspense fallback={<PageLoader />}>
       {modal && <AnimatedModal setModal={setModal} modal={modal} />}
       {openPopup && (
-        <Modal setOpenPopup={setOpenPopup} handleTemplate={handleTemplate} />
+        <Modal setOpenPopup={setOpenPopup} />
       )}
 
       <div className="Appcontainer">
@@ -72,7 +68,6 @@ function App() {
           open={open}
           format={format}
           handleDownload={handleDownload}
-          setTemplate={handleTemplate} // ✅ Pass handler, not state setter
           setOpenPopup={setOpenPopup}
           openPopup={openPopup}
         />
@@ -80,9 +75,7 @@ function App() {
         <SidebarLayout
           previewRef={previewRef}
           handleDownload={handleDownload}
-          template={template}
-          forebackground={forebackground}
-          pagecolor={pagecolor}
+
         />
 
         <Footer />

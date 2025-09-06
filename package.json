@@ -31,6 +31,7 @@
     "debug": "^4.4.1",
     "deep-is": "^0.1.4",
     "delayed-stream": "^1.0.0",
+    "dom-to-image-more": "^3.7.1",
     "dunder-proto": "^1.0.1",
     "electron-to-chromium": "^1.5.208",
     "es-define-property": "^1.0.1",
